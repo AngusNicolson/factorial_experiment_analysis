@@ -7,6 +7,5 @@ Python code to analyse factorial experiments.
 - Some simple graphs can be plotted giving an overview of the data
 
 ## Current limitations
-- Data must have specific column names for ANOVA functions to work
 - Must have repeat data for each measurement
 - No model/regression stuff yet
