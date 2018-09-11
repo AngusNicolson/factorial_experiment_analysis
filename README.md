@@ -3,7 +3,7 @@ Python code to analyse factorial experiments.
 
 
 ## Current Features
-- 2,3 and 4 factor ANOVA tables can be produced, including all interactions.
+- 2, 3 and 4 factor ANOVA tables can be produced, including all interactions.
 - Some simple graphs can be plotted giving an overview of the data
 
 ## Current limitations
