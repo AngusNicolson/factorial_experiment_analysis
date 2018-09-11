@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from scipy.stats import f
+from scipy.stats import norm
 
 def calculate_subplot_config(num_x):
     n_rows = 1
@@ -197,10 +198,29 @@ def Four_factor_ANOVA(data):
     return ANOVA_table
 
 def residual_plot(data, ANOVA_table):
-    sigma_squared = ANOVA_table.loc['Error', 'Mean Square']
-    residuals = []
-    for i in range(len(data.columns) - 1):
-        residuals.append(data - data.groupby([data.columns[i]]).mean().iloc[:,-1].values)
+    """Makes a normal probability plot of residuals"""
+    columns = list(data.columns[:-1])
+    tmp_data = data.set_index(list(data.columns[:-1]))
+    sigma = np.sqrt(ANOVA_table.loc['Error', 'Mean Square'])
+    residuals = (tmp_data - tmp_data.groupby(columns).mean()).iloc[:, -1].values/sigma
+    residuals.sort()
+    df = pd.DataFrame(columns=['Residuals'], data=residuals)
+    df['Position'] = df.index + 1
+    df['f'] = (df.Position - 0.375)/(len(df) + 0.25)
+    df['z'] = norm.ppf(df.f)
+    
+    sns.regplot(x='Residuals', y='z', data=df)
+
+def normal_plot(data):
+    """Makes a normal probability plot of the response"""
+    tmp_data = data.iloc[:, -1].values
+    tmp_data.sort()
+    df = pd.DataFrame(columns=['Response'], data=tmp_data)
+    df['Position'] = df.index + 1
+    df['f'] = (df.Position - 0.375)/(len(df) + 0.25)
+    df['z'] = norm.ppf(df.f)
+    
+    sns.regplot(x='Response', y='z', data=df)
 
 #----------------------Import data and data manipulation-----------------------
 #Last column must be dependant variable.
