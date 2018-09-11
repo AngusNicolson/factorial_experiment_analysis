@@ -26,6 +26,9 @@ def unique_values_dict(df):
 
 def Two_factor_ANOVA(data):
     """Creates an ANVOA table for a 3-factor factorial experiment. Requires at least one repeat (i.e. 2 measurements) for each combination of factors."""
+    #Edit column names
+    data.columns = ['A', 'B', 'Response']
+    
     #Determine the number of levels in each factor and how many repeats
     unique_dict = unique_values_dict(data)
     a = len(unique_dict['A'])
@@ -65,8 +68,11 @@ def Two_factor_ANOVA(data):
     
     return ANOVA_table
 
+
 def Three_factor_ANOVA(data):
     """Creates an ANVOA table for a 3-factor factorial experiment. Requires at least one repeat (i.e. 2 measurements) for each combination of factors."""
+    #Edit column names
+    data.columns = ['A', 'B', 'C', 'Response']
     #Determine the number of levels in each factor and how many repeats
     unique_dict = unique_values_dict(data)
     a = len(unique_dict['A'])
@@ -117,6 +123,9 @@ def Three_factor_ANOVA(data):
 
 def Four_factor_ANOVA(data):
     """Creates an ANVOA table for a 4-factor factorial experiment. Requires at least one repeat (i.e. 2 measurements) for each combination of factors."""
+    #Edit column names
+    data.columns = ['A', 'B', 'C', 'D', 'Response']
+    
     #Determine the number of levels in each factor and how many repeats
     unique_dict = unique_values_dict(data)
     a = len(unique_dict['A'])
@@ -125,6 +134,7 @@ def Four_factor_ANOVA(data):
     d = len(unique_dict['D'])
     n = len(data)/(a*b*c*d)
     
+    #Sum of all data points
     sum_y = data.iloc[:,-1].sum()
     
     #Main effects
