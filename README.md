@@ -9,3 +9,6 @@ Python code to analyse factorial experiments.
 ## Current limitations
 - Must have repeat data for each measurement
 - No model/regression stuff yet
+
+## Planned edits
+- Complete rework, replacing many of the repeated lines of code with functions. This should allow for more complicated factorial experiments
