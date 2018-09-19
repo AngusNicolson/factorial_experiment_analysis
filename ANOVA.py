@@ -1,10 +1,16 @@
-import pandas as pd
 import itertools
-from scipy.stats import f
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+from scipy.stats import f
+from scipy.stats import norm
 
 class ANOVA:
-    """Analyse DOE experiments using ANOVA. NB: n > 1 for the code to work, where n is the number of repeats."""
+    """Analyse DOE experiments using ANOVA. NB: n > 1 for the code to work, where n is the number of repeats.
+    Model: y = y_average
+    i.e. all factors have no effect on the response. Hence the sum of squares is a measure of how much the factor effects the response.
+    Replace with linear model??"""
     def __init__(self, data):
         #Initialise variables and define simple statistical values
         self.data = data
@@ -74,7 +80,10 @@ class ANOVA:
         
         #F0 for statistical significance P<0.05
         self.calculate_F0_significance_level()
-       
+        
+        #Residuals for model y = average_y
+        self.calculate_residuals()
+    
     def calculate_interactions(self, interaction_level):
         """Calculates sum of squares and degrees of freedom for a specified interaction level and saves them in the self.table dataframe.
         interaction_level = 1 ---> Main factors
@@ -134,3 +143,51 @@ class ANOVA:
     
     def calculate_F0_significance_level(self, sig=0.05):
         self.significance = self.f_function.isf(sig)
+
+    def calculate_residuals(self):
+        self.sigma = np.sqrt(self.table.loc['Error', 'Mean Square'])
+        tmp_data = self.data.set_index(self.factors)
+        self.residuals = (tmp_data - tmp_data.groupby(self.factors).mean()).iloc[:, -1].values/self.sigma
+
+    def plot_residuals(self):
+        """Makes a normal probability plot of residuals"""
+        residuals = sorted(self.residuals)
+        df = pd.DataFrame(columns=['Residuals'], data=residuals)
+        df['Position'] = df.index + 1
+        df['f'] = (df.Position - 0.375)/(len(df) + 0.25)
+        df['z'] = norm.ppf(df.f)
+        
+        plt.figure()
+        sns.regplot(x='Residuals', y='z', data=df)
+        plt.show()
+    
+    def plot_normal(self):
+        """Makes a normal probability plot of the response"""
+        tmp_data = self.data.iloc[:, -1].values
+        tmp_data.sort()
+        df = pd.DataFrame(columns=['Response'], data=tmp_data)
+        df['Position'] = df.index + 1
+        df['f'] = (df.Position - 0.375)/(len(df) + 0.25)
+        df['z'] = norm.ppf(df.f)
+        
+        plt.figure()
+        sns.regplot(x='Response', y='z', data=df)
+        plt.show()
+    
+    def plot_pareto_chart(self):
+        ANOVA_table = self.table.sort_values(by='F0')
+        plt.figure()
+        plt.barh(ANOVA_table.index, ANOVA_table['F0'])
+        plt.xlabel('F0')
+        plt.ylabel('Term')
+        plt.axvline(x = self.significance, linestyle='--')
+    
+ 
+three_data = pd.read_csv('test_data.csv')    
+three = ANOVA(three_data)
+
+#Doesn't work for n < 2
+five_data = pd.read_csv('example_data.csv')
+five_data.drop(columns=['order'], inplace=True)
+five = ANOVA(five_data)
+
