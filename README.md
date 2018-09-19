@@ -10,5 +10,4 @@ Python code to analyse factorial experiments.
 - No model/regression stuff yet
 
 ## Planned edits
-- Need to add plots to the ANOVA class
 - Regression
